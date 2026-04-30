@@ -402,3 +402,22 @@ The script implements rate limiting to avoid overwhelming the API. Default setti
   - MS (ID: 39): Abdullah Muhammad Basmeih - Malay translation
   - EN (ID: 131): Dr. Mustafa Khattab, The Clear Quran - English translation
   - ID (ID: 33): Indonesian Islamic affairs ministry - Indonesian translation
+
+## Menjalankan Versi Web (UI)
+
+Setelah data chapter sudah tersedia di folder `chapters/`, jalankan:
+
+```bash
+npm run web
+```
+
+Buka browser ke:
+
+- `http://localhost:3000`
+
+Fitur UI:
+
+- Tema islami (hijau-emas) dengan tampilan profesional
+- Menampilkan tarikh hari ini otomatis
+- Menampilkan creator: `name`
+- Daftar surah dan detail ayat hasil scrape API

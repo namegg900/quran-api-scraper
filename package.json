@@ -5,9 +5,18 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "web": "node server.js"
   },
-  "keywords": ["quran", "api", "scraper", "translations", "verses", "islamic", "multilingual"],
+  "keywords": [
+    "quran",
+    "api",
+    "scraper",
+    "translations",
+    "verses",
+    "islamic",
+    "multilingual"
+  ],
   "author": "Syahmi Rafsanjani",
   "license": "ISC",
   "dependencies": {
