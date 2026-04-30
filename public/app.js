@@ -7,6 +7,7 @@ const prevPage = document.getElementById('prevPage');
 const nextPage = document.getElementById('nextPage');
 const pageIndicator = document.getElementById('pageIndicator');
 
+const API_BASE = 'https://api.quran.com/api/v4';
 let activeChapter = null;
 let page = 1;
 
@@ -16,13 +17,18 @@ function updateTodayDate() {
   })}`;
 }
 
+function showError(error) {
+  chapterInfo.innerHTML = `<p class="error">${error.message}</p>`;
+}
+
 function getTotalPages() {
-  if (!activeChapter) return 1;
+  if (!activeChapter?.verses) return 1;
   return Math.max(1, Math.ceil(activeChapter.verses.length / Number(ayahPerPage.value)));
 }
 
 function renderPage(direction = 'next') {
-  if (!activeChapter) return;
+  if (!activeChapter?.verses) return;
+
   const perPage = Number(ayahPerPage.value);
   const start = (page - 1) * perPage;
   const visibleVerses = activeChapter.verses.slice(start, start + perPage);
@@ -30,14 +36,13 @@ function renderPage(direction = 'next') {
   versesContainer.classList.remove('flip-next', 'flip-prev');
   versesContainer.classList.add(direction === 'prev' ? 'flip-prev' : 'flip-next');
 
-  versesContainer.innerHTML = visibleVerses
-    .map((verse) => `
-      <article class="verse">
-        <div><strong>${verse.verse_key}</strong></div>
-        <div class="arabic">${verse.text_uthmani}</div>
-        <div class="translation">${verse.translations?.id || '-'}</div>
-      </article>
-    `).join('');
+  versesContainer.innerHTML = visibleVerses.map((verse) => `
+    <article class="verse">
+      <div><strong>${verse.verse_key}</strong></div>
+      <div class="arabic">${verse.text_uthmani || '-'}</div>
+      <div class="translation">${verse.translations?.[0]?.text || 'Terjemahan belum tersedia.'}</div>
+    </article>
+  `).join('');
 
   const totalPages = getTotalPages();
   pageIndicator.textContent = `Halaman ${page} / ${totalPages}`;
@@ -45,36 +50,57 @@ function renderPage(direction = 'next') {
   nextPage.disabled = page >= totalPages;
 }
 
-async function loadChapter(chapterId) {
-  const res = await fetch(`/api/chapter/${chapterId}`);
-  if (!res.ok) throw new Error('Gagal memuat detail surah.');
-  activeChapter = await res.json();
-  page = 1;
+async function fetchAllVerses(chapterId) {
+  const verses = [];
+  let currentPage = 1;
+  let totalPages = 1;
 
+  do {
+    const res = await fetch(`${API_BASE}/verses/by_chapter/${chapterId}?language=id&words=false&translations=33&per_page=50&page=${currentPage}&fields=text_uthmani`);
+    if (!res.ok) throw new Error('Gagal memuat ayat dari Quran API.');
+
+    const data = await res.json();
+    verses.push(...(data.verses || []));
+    totalPages = data.pagination?.total_pages || 1;
+    currentPage += 1;
+  } while (currentPage <= totalPages);
+
+  return verses;
+}
+
+async function loadChapter(chapterId) {
+  const chapterRes = await fetch(`${API_BASE}/chapters/${chapterId}?language=id`);
+  if (!chapterRes.ok) throw new Error('Gagal memuat detail surah.');
+  const chapterData = await chapterRes.json();
+
+  const verses = await fetchAllVerses(chapterId);
+
+  activeChapter = {
+    chapter: chapterData.chapter,
+    verses,
+  };
+
+  page = 1;
   chapterInfo.innerHTML = `
     <h2>Surah ${activeChapter.chapter.name_simple} - ${activeChapter.chapter.name_arabic}</h2>
     <p><strong>ID:</strong> ${activeChapter.chapter.id} | <strong>Jumlah Ayat:</strong> ${activeChapter.chapter.verses_count}</p>
-    <p><strong>Terjemahan Indonesia:</strong> ${activeChapter.chapter.translated_names?.id || '-'}</p>`;
+    <p><strong>Terjemahan Indonesia:</strong> ${activeChapter.chapter.translated_name?.name || '-'}</p>`;
 
   renderPage('next');
 }
 
 async function loadChapters() {
-  const res = await fetch('/api/chapters');
+  const res = await fetch(`${API_BASE}/chapters?language=id`);
   if (!res.ok) throw new Error('Gagal memuat daftar surah.');
   const data = await res.json();
 
-  chapterSelect.innerHTML = data.chapters.map((c) => (
+  chapterSelect.innerHTML = (data.chapters || []).map((c) =>
     `<option value="${c.id}">${c.id}. ${c.name_simple} (${c.name_arabic})</option>`
-  )).join('');
+  ).join('');
 
-  if (data.chapters.length) {
+  if (data.chapters?.length) {
     await loadChapter(data.chapters[0].id);
   }
-}
-
-function showError(error) {
-  chapterInfo.innerHTML = `<p class="error">${error.message}</p>`;
 }
 
 chapterSelect.addEventListener('change', (event) => loadChapter(event.target.value).catch(showError));
