@@ -9,9 +9,9 @@
   <body>
     <header class="hero">
       <div>
-        <p class="badge">Quran Reader • Web Profesional</p>
-        <h1>بِسْمِ ٱللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h1>
-        <p class="subtitle">Baca Al-Qur'an hasil scrape API dalam tampilan web yang rapi, nyaman, dan mudah dipahami.</p>
+        <p class="badge">Quran Reader • Profesional</p>
+        <h1>الْقُرْآنُ الْكَرِيمُ</h1>
+        <p class="subtitle">Tampilan membaca Al-Qur'an seperti membuka halaman, nyaman di mobile, tablet, dan desktop.</p>
       </div>
       <div class="meta">
         <p id="todayDate"></p>
@@ -20,13 +20,32 @@
     </header>
 
     <main>
-      <section class="card">
-        <label for="chapterSelect">Pilih Surah</label>
-        <select id="chapterSelect"></select>
+      <section class="card controls-grid">
+        <div>
+          <label for="chapterSelect">Pilih Surah</label>
+          <select id="chapterSelect"></select>
+        </div>
+        <div>
+          <label for="ayahPerPage">Ayat per Halaman</label>
+          <select id="ayahPerPage">
+            <option value="5">5</option>
+            <option value="8" selected>8</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
       </section>
 
       <section class="card" id="chapterInfo"></section>
-      <section class="verses" id="versesContainer"></section>
+
+      <section class="page-wrap">
+        <div class="page-toolbar">
+          <button id="prevPage">⟵ Halaman Sebelumnya</button>
+          <p id="pageIndicator">Halaman 1 / 1</p>
+          <button id="nextPage">Halaman Berikutnya ⟶</button>
+        </div>
+        <section class="verses" id="versesContainer"></section>
+      </section>
     </main>
 
     <script src="/app.js" defer></script>
