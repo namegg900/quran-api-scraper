@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quran Reader - Tema Islami</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <p class="badge">Quran Reader • Web Profesional</p>
+        <h1>بِسْمِ ٱللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</h1>
+        <p class="subtitle">Baca Al-Qur'an hasil scrape API dalam tampilan web yang rapi, nyaman, dan mudah dipahami.</p>
+      </div>
+      <div class="meta">
+        <p id="todayDate"></p>
+        <p>Creator: <strong>name</strong></p>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <label for="chapterSelect">Pilih Surah</label>
+        <select id="chapterSelect"></select>
+      </section>
+
+      <section class="card" id="chapterInfo"></section>
+      <section class="verses" id="versesContainer"></section>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>
